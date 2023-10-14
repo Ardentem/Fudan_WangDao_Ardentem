@@ -6,6 +6,7 @@ from transformers import BertModel
 class basicmodel:
     def __init__(self):
         #MODEL_PATH = './Transformer_Bert/bert_base_chinese'
+        #设置预训练模型的位置
         self.MODEL_PATH = './Transformer_Bert/FinBERT_L-12_H-768_A-12_pytorch'
 
     def initialize(self):
