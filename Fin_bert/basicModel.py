@@ -15,7 +15,7 @@ class basicmodel:
         #股票收盘价 读取
         self.close = pd.read_feather('./database/BasicFactor_Close.txt').set_index('time')
         self.close.index = pd.to_datetime(self.close.index.astype(str))
-        self.close = self.close['2022-07-01':]
+        self.close = self.close['2022-06-01':]
 
     def initialize(self):
         # a. 通过词典导入分词器
@@ -31,7 +31,7 @@ class basicmodel:
 
     # 定义计算相似度的函数（两个字符串，单独调用使用，不要在for循环中大量调用，速度很慢）
     def calc_similarity(self,s1,s2):
-        # 对句子进行分词，并添加特殊标记
+        # 对句子进行分词，并添加特殊标记（开始和结尾的标记）
         inputs = self.tokenizer([s1, s2], return_tensors='pt', padding=True, truncation=True)
         # 将输入传递给BERT模型，并获取输出
         with torch.no_grad():
@@ -78,5 +78,13 @@ class basicmodel:
         simlist.sort(key=lambda x:x[1])
         #返回相似度最高的k支股票
         return(simlist[-k:])
+    
+    #股票收益数据处理
+    def initialize_stockret(self):
+        self.adjfac = pd.read_feather('./database/BasicFactor_AdjFactor.txt').set_index('time')
+        self.adjfac.index = pd.to_datetime(self.adjfac.index.astype(str))
+        self.adjfac = self.adjfac['2022-06-01':]
+        self.adjclose = self.close * self.adjfac
+        self.ret = self.adjclose / self.adjclose.shift(1) -1
 
 
